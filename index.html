@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Calculadora de interés compuesto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f5f2;--panel:#ffffff;--ink:#14231c;--muted:#5b6b62;--line:#d5ddd7;
+  --green:#1f6b4a;--blue:#2c5d8a;--gold:#b7852b;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#0f1713;--panel:#17221c;--ink:#e6eee9;--muted:#93a69b;--line:#2a3a31;--green:#4fc08a;--blue:#6fa8dc;--gold:#e0b24f}
+}
+:root[data-theme="dark"]{--bg:#0f1713;--panel:#17221c;--ink:#e6eee9;--muted:#93a69b;--line:#2a3a31;--green:#4fc08a;--blue:#6fa8dc;--gold:#e0b24f}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "IBM Plex Sans",system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.6rem;margin:0 0 4px}
+p.sub{margin:0 0 20px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:20px}
+@media (max-width:800px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px}
+label{display:block;font-size:.9rem;color:var(--muted);margin:12px 0 4px}
+label:first-child{margin-top:0}
+input,select{width:100%;padding:9px 10px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px}
+input:focus-visible,select:focus-visible{outline:2px solid var(--green);outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+@media (max-width:520px){.kpis{grid-template-columns:1fr}}
+.kpi{border:1px solid var(--line);border-radius:6px;padding:10px 12px}
+.kpi span{display:block;font-size:.8rem;color:var(--muted)}
+.kpi b{font:500 1.2rem "IBM Plex Mono",monospace}
+.kpi.final b{color:var(--green)}
+svg{width:100%;height:auto;display:block;margin-bottom:16px}
+.tw{overflow-x:auto;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;font:500 .85rem "IBM Plex Mono",monospace;white-space:nowrap}
+th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line)}
+th{position:sticky;top:0;background:var(--panel);font-family:"IBM Plex Sans",sans-serif;font-weight:600;color:var(--muted)}
+th:first-child,td:first-child{text-align:left}
+.legend{display:flex;gap:16px;font-size:.85rem;color:var(--muted);margin-bottom:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px}
+.err{color:#b3261e;font-size:.85rem;min-height:1.2em;margin-top:10px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Calculadora de interés compuesto</h1>
+  <p class="sub">Proyecta cuánto crece un capital con aportes periódicos.</p>
+  <div class="grid">
+    <section class="panel" aria-label="Datos">
+      <label for="p">Capital inicial (USD)</label>
+      <input id="p" type="number" inputmode="decimal" min="0" step="any" value="5000">
+      <label for="m">Aporte mensual (USD)</label>
+      <input id="m" type="number" inputmode="decimal" min="0" step="any" value="200">
+      <div class="row">
+        <div><label for="r">Tasa anual (%)</label><input id="r" type="number" inputmode="decimal" min="0" step="any" value="8"></div>
+        <div><label for="y">Plazo (años)</label><input id="y" type="number" inputmode="numeric" min="1" max="60" step="1" value="10"></div>
+      </div>
+      <label for="f">Capitalización</label>
+      <select id="f">
+        <option value="12" selected>Mensual</option>
+        <option value="4">Trimestral</option>
+        <option value="2">Semestral</option>
+        <option value="1">Anual</option>
+        <option value="365">Diaria</option>
+      </select>
+      <div class="err" id="err" role="alert"></div>
+    </section>
+    <section class="panel" aria-live="polite">
+      <div class="kpis">
+        <div class="kpi final"><span>Saldo final</span><b id="kF">–</b></div>
+        <div class="kpi"><span>Total aportado</span><b id="kA">–</b></div>
+        <div class="kpi"><span>Interés ganado</span><b id="kI">–</b></div>
+      </div>
+      <div class="legend"><span><i style="background:var(--blue)"></i>Aportado</span><span><i style="background:var(--green)"></i>Saldo con interés</span></div>
+      <svg id="chart" viewBox="0 0 640 240" role="img" aria-label="Gráfico de evolución del saldo"></svg>
+      <div class="tw"><table>
+        <thead><tr><th>Año</th><th>Aportado</th><th>Interés del año</th><th>Saldo</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table></div>
+    </section>
+  </div>
+</main>
+<script>
+(function(){
+  var $=function(i){return document.getElementById(i)};
+  var fmt=new Intl.NumberFormat("es-VE",{style:"currency",currency:"USD",maximumFractionDigits:2});
+  function calc(){
+    var P=parseFloat($("p").value)||0, M=parseFloat($("m").value)||0,
+        r=(parseFloat($("r").value)||0)/100, Y=parseInt($("y").value,10), n=parseInt($("f").value,10);
+    var err=$("err");
+    if(!(Y>=1&&Y<=60)||P<0||M<0||r<0||(P===0&&M===0)){
+      err.textContent="Revisa los datos: plazo entre 1 y 60 años, valores no negativos y al menos capital o aporte mayor a 0.";
+      return;
+    }
+    err.textContent="";
+    // Se simula mes a mes; el interés se acredita según la frecuencia elegida
+    // Tasa efectiva mensual equivalente a la capitalización n: (1+r/n)^(n/12)-1
+    var im=Math.pow(1+r/n,n/12)-1;
+    var bal=P, aport=P, data=[{y:0,a:aport,b:bal}], prevB=P, prevA=P;
+    var rows="";
+    for(var mes=1;mes<=Y*12;mes++){
+      bal=bal*(1+im)+M; aport+=M;
+      if(mes%12===0){
+        var yr=mes/12, gan=(bal-aport)-(prevB-prevA);
+        data.push({y:yr,a:aport,b:bal});
+        rows+="<tr><td>"+yr+"</td><td>"+fmt.format(aport)+"</td><td>"+fmt.format(gan)+"</td><td>"+fmt.format(bal)+"</td></tr>";
+        prevB=bal; prevA=aport;
+      }
+    }
+    $("kF").textContent=fmt.format(bal);
+    $("kA").textContent=fmt.format(aport);
+    $("kI").textContent=fmt.format(bal-aport);
+    $("rows").innerHTML=rows;
+    draw(data);
+  }
+  function draw(d){
+    var W=640,H=240,L=56,R=10,T=10,B=26,max=d[d.length-1].b,x=function(i){return L+(W-L-R)*i/(d.length-1||1)},
+        y=function(v){return T+(H-T-B)*(1-v/max)};
+    var s="";
+    for(var g=0;g<=4;g++){
+      var v=max*g/4,yy=y(v);
+      s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+yy+'" y2="'+yy+'" stroke="var(--line)"/>';
+      s+='<text x="'+(L-6)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+(v>=1e6?(v/1e6).toFixed(1)+"M":v>=1e3?Math.round(v/1e3)+"k":Math.round(v))+'</text>';
+    }
+    var step=Math.max(1,Math.ceil((d.length-1)/8));
+    d.forEach(function(p,i){ if(i%step===0) s+='<text x="'+x(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="var(--muted)">'+p.y+'</text>'; });
+    function path(k){return d.map(function(p,i){return (i?"L":"M")+x(i).toFixed(1)+" "+y(p[k]).toFixed(1)}).join(" ")}
+    s+='<path d="'+path("a")+'" fill="none" stroke="var(--blue)" stroke-width="2"/>';
+    s+='<path d="'+path("b")+'" fill="none" stroke="var(--green)" stroke-width="2.5"/>';
+    $("chart").innerHTML=s;
+  }
+  ["p","m","r","y","f"].forEach(function(i){$(i).addEventListener("input",calc)});
+  calc();
+})();
+</script>
+</body>
+</html>
