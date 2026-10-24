@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Círculo Financiero · Calculadoras para inversionistas principiantes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F9FB;--surface:#FFFFFF;--ink:#1F2937;--muted:#5B6676;--line:#E1E7EE;
+  --primary:#0B1F3A;--figure:#1E3A8A;--gold:#C9A24B;
+  --accent:#15803D;--accent-soft:rgba(21,128,61,.10);--accent-ink:#FFFFFF;--pos:#15803D;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;--sans:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0B1F3A;--surface:#112A4D;--ink:#E8EEF6;--muted:#9FB0C8;--line:#24406A;
+    --primary:#1E3A8A;--figure:#FFFFFF;--gold:#C9A24B;
+    --accent:#10B981;--accent-soft:rgba(16,185,129,.12);--accent-ink:#0B1F3A;--pos:#34D399;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0B1F3A;--surface:#112A4D;--ink:#E8EEF6;--muted:#9FB0C8;--line:#24406A;
+  --primary:#1E3A8A;--figure:#FFFFFF;--gold:#C9A24B;
+  --accent:#10B981;--accent-soft:rgba(16,185,129,.12);--accent-ink:#0B1F3A;--pos:#34D399;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+header{display:flex;align-items:center;justify-content:space-between;padding:28px 0}
+.brand{font-family:var(--serif);font-size:26px;font-weight:600;letter-spacing:-.01em}
+.brand{display:flex;align-items:center;gap:12px}
+.brand img{display:block;width:48px;height:48px;border-radius:50%}
+header span{color:var(--muted);font-size:14px}
+.hero{padding:40px 0 48px;max-width:760px}
+.hero::before{content:"";display:block;width:48px;height:3px;background:var(--gold);margin-bottom:22px}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(36px,6vw,62px);line-height:1.06;letter-spacing:-.02em;margin:0 0 20px}
+.hero p{color:var(--muted);font-size:18px;max-width:58ch;margin:0}
+.tabs{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:14px;margin-bottom:24px;max-width:100%;overflow-x:auto}
+.tabs button{font:600 15px var(--sans);color:var(--muted);background:none;border:0;padding:12px 20px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.tabs button[aria-selected="true"]{background:var(--primary);color:#FFFFFF}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.panel{display:none;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+.panel.on{display:grid}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px}
+.card h2{font-family:var(--serif);font-weight:600;font-size:22px;margin:0 0 4px}
+.card .sub{color:var(--muted);font-size:14px;margin:0 0 22px}
+.field{margin-bottom:18px}
+.field label{display:flex;justify-content:space-between;font-size:14px;font-weight:600;margin-bottom:6px}
+.field small{display:block;color:var(--muted);font-size:12.5px;margin-top:5px}
+.inp{display:flex;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:0 14px}
+.inp:focus-within{border-color:var(--accent)}
+.inp span{color:var(--muted);font-size:15px}
+.inp input,.inp select{flex:1;min-width:0;background:none;border:0;color:var(--ink);font:600 17px var(--sans);padding:13px 8px;outline:0}
+.inp select{padding-left:0;appearance:none;cursor:pointer}
+.inp select option{color:#0F1B2D}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--bg);border:1px solid var(--line);border-radius:12px;margin-bottom:20px}
+.seg button{font:600 14px var(--sans);color:var(--muted);background:none;border:0;padding:11px 8px;border-radius:9px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line)}
+.big{padding:32px}
+.kicker{color:var(--muted);font-size:14px}
+.total{font-family:var(--serif);font-size:clamp(40px,6vw,64px);line-height:1.05;letter-spacing:-.02em;color:var(--figure);margin:4px 0 22px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0;border-top:1px solid var(--line)}
+.stat{padding:16px 16px 4px 0}
+.stat+.stat{padding-left:16px;border-left:1px solid var(--line)}
+.stat b{display:block;font-size:20px;font-weight:700}
+.stat span{color:var(--muted);font-size:13px}
+.pos{color:var(--pos)}
+.chart{margin-top:26px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:18px;color:var(--muted);font-size:13px;margin-top:8px}
+.legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:6px;vertical-align:middle}
+details{margin-top:20px;border-top:1px solid var(--line);padding-top:14px}
+summary{cursor:pointer;font-weight:600;font-size:14px}
+.tbl{overflow-x:auto;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+th,td{text-align:right;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--muted);font-weight:600}
+.explain{background:var(--accent-soft);border-radius:14px;padding:16px 18px;font-size:15px;margin-top:22px}
+.note{max-width:760px;color:var(--muted);font-size:13px;margin:40px 0 0}
+.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);font:700 16px var(--sans);text-decoration:none;padding:15px 26px;border-radius:12px}
+.btn:hover{filter:brightness(1.08)}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.btn2{background:transparent;color:var(--ink);border:1px solid var(--line);padding:14px 25px}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+header a.join{font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;border:1px solid var(--line);background:var(--surface);padding:9px 16px;border-radius:10px}
+.community{margin-top:56px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:44px}
+.community h2{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.015em;margin:0 0 14px}
+.community p{color:var(--muted);margin:0 0 24px;max-width:54ch}
+.facts{margin:0;display:grid;gap:0}
+.facts div{padding:16px 0;border-bottom:1px solid var(--line)}
+.facts div:first-child{border-top:1px solid var(--line)}
+.facts dt{color:var(--muted);font-size:13px}
+.facts dd{margin:2px 0 0;font-size:18px;font-weight:700}
+@media (max-width:860px){.community{grid-template-columns:minmax(0,1fr);padding:26px;gap:24px}}
+.values{margin-top:56px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:32px}
+@media (max-width:860px){.values{padding:22px}}
+.values h2{font-family:var(--serif);font-weight:400;font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.015em;margin:0 0 28px}
+.vgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:48px}
+.vgrid div{padding:22px 0;border-top:1px solid var(--line)}
+.vgrid h3{font-family:var(--serif);font-weight:600;font-size:20px;margin:0 0 6px}
+.vgrid p{margin:0;color:var(--muted);max-width:46ch}
+@media (max-width:700px){.vgrid{grid-template-columns:minmax(0,1fr)}}
+footer{padding:28px 0 48px;color:var(--muted);font-size:13px}
+@media (max-width:860px){.panel.on{grid-template-columns:minmax(0,1fr)}.wrap{padding:0 18px}.card{padding:22px}.big{padding:24px}}
+@media (max-width:480px){.stat+.stat{padding-left:0;border-left:0}.stat{padding-right:0}}
+@media (prefers-reduced-motion:no-preference){.total{transition:opacity .2s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand"><img src="data:image/webp;base64,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" alt="Logo de Círculo Financiero" width="48" height="48">Círculo Financiero</div>
+    <a class="join" href="#comunidad">Unirme a la comunidad</a>
+  </header>
+
+  <section class="hero">
+    <h1>Entiende cuánto puede crecer tu dinero antes de invertirlo.</h1>
+    <p>Dos herramientas simples: una proyecta tu inversión con interés compuesto y la otra mide cuánto rinde la prima de una opción respecto al capital que la respalda.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Calculadoras">
+    <button role="tab" id="t1" aria-selected="true" aria-controls="p1">Interés compuesto</button>
+    <button role="tab" id="t2" aria-selected="false" aria-controls="p2">Prima de opciones</button>
+  </div>
+
+  <!-- INTERÉS COMPUESTO -->
+  <section class="panel on" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="card">
+      <h2>Tu proyección</h2>
+      <p class="sub">Cambia los valores y el resultado se actualiza al instante.</p>
+      <div class="field"><label for="c-ini">Capital inicial</label><div class="inp"><span>$</span><input id="c-ini" type="number" inputmode="decimal" min="0" step="any" value="1000"></div></div>
+      <div class="field"><label for="c-apo">Aporte mensual</label><div class="inp"><span>$</span><input id="c-apo" type="number" inputmode="decimal" min="0" step="any" value="200"></div></div>
+      <div class="field"><label for="c-tas">Rendimiento anual esperado</label><div class="inp"><input id="c-tas" type="number" inputmode="decimal" min="0" step="any" value="8"><span>%</span></div><small>Como referencia, el índice S&amp;P 500 ha rendido cerca de 10 % anual en promedio histórico, con años negativos.</small></div>
+      <div class="field"><label for="c-anos">Plazo</label><div class="inp"><input id="c-anos" type="number" inputmode="numeric" min="1" max="60" step="1" value="10"><span>años</span></div></div>
+      <div class="field"><label for="c-frec">Capitalización de intereses</label><div class="inp"><select id="c-frec"><option value="12" selected>Mensual</option><option value="4">Trimestral</option><option value="1">Anual</option><option value="365">Diaria</option></select></div></div>
+    </div>
+    <div class="card big">
+      <div class="kicker">Valor estimado al final del plazo</div>
+      <div class="total" id="c-total">$0</div>
+      <div class="stats">
+        <div class="stat"><b id="c-aport">$0</b><span>Total que aportaste</span></div>
+        <div class="stat"><b class="pos" id="c-int">$0</b><span>Intereses ganados</span></div>
+        <div class="stat"><b id="c-mult">0x</b><span>Veces tu dinero aportado</span></div>
+      </div>
+      <div class="chart">
+        <svg id="c-svg" viewBox="0 0 600 290" role="img" aria-label="Gráfico de crecimiento del capital"></svg>
+        <div class="legend"><span><i style="background:var(--accent)"></i>Valor total</span><span><i style="background:var(--muted)"></i>Lo que aportaste</span></div>
+      </div>
+      <details><summary>Ver evolución año por año</summary><div class="tbl"><table><thead><tr><th>Año</th><th>Aportado</th><th>Intereses</th><th>Total</th></tr></thead><tbody id="c-body"></tbody></table></div></details>
+    </div>
+  </section>
+
+  <!-- PRIMA DE OPCIONES -->
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+    <div class="card">
+      <h2>Prima que recibes</h2>
+      <p class="sub"><b style="color:var(--ink)">¿Qué es la prima?</b> Es el dinero que cobras al vender una opción: el pago por comprometerte a comprar (Put) o a vender (Call) acciones a un precio fijo hasta una fecha. Se cotiza por acción.</p>
+      <div class="seg" role="group" aria-label="Tipo de operación">
+        <button id="o-put" aria-pressed="true">Vender Put</button>
+        <button id="o-call" aria-pressed="false">Vender Call cubierta</button>
+      </div>
+      <div class="field"><label for="o-px">Precio actual de la acción</label><div class="inp"><span>$</span><input id="o-px" type="number" inputmode="decimal" min="0" step="any" value="50"></div></div>
+      <div class="field"><label for="o-k">Precio de ejercicio (strike)</label><div class="inp"><span>$</span><input id="o-k" type="number" inputmode="decimal" min="0" step="any" value="47"></div></div>
+      <div class="field"><label for="o-pr">Prima por acción</label><div class="inp"><span>$</span><input id="o-pr" type="number" inputmode="decimal" min="0" step="any" value="1.20"></div><small>Es el precio que ves en la cadena de opciones.</small></div>
+      <div class="field"><label for="o-n">Contratos</label><div class="inp"><input id="o-n" type="number" inputmode="numeric" min="1" step="1" value="1"></div><small>Cada contrato cubre 100 acciones.</small></div>
+      <div class="field"><label for="o-d">Días hasta el vencimiento</label><div class="inp"><input id="o-d" type="number" inputmode="numeric" min="1" step="1" value="30"><span>días</span></div></div>
+    </div>
+    <div class="card big">
+      <div class="kicker">Rendimiento de la prima sobre el capital</div>
+      <div class="total" id="o-yield">0 %</div>
+      <div class="stats">
+        <div class="stat"><b class="pos" id="o-prem">$0</b><span>Prima total cobrada</span></div>
+        <div class="stat"><b id="o-cap">$0</b><span id="o-caplbl">Capital que respalda</span></div>
+        <div class="stat"><b id="o-ann">0 %</b><span>Anualizado (simple)</span></div>
+      </div>
+      <p id="o-annnote" style="font-size:12px;line-height:1.5;color:var(--muted);margin:16px 0 0"></p>
+      <div class="explain" style="margin-top:22px">
+        <div id="o-txt"></div>
+        <p id="o-base" style="font-size:12px;line-height:1.5;color:var(--muted);margin:10px 0 0"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="values" id="valores">
+    <h2>Nuestros valores</h2>
+    <div class="vgrid">
+      <div><h3>Ayudar a nuestros compañeros</h3><p>Crecemos en comunidad. Lo que aprendemos lo compartimos para que todos avancen.</p></div>
+      <div><h3>El cambio empieza en la mente</h3><p>Antes de cambiar los resultados, cambiamos la forma de pensar sobre el dinero.</p></div>
+      <div><h3>Pensamos desde la prosperidad</h3><p>Nuestra mente siempre parte de las posibilidades y del crecimiento, no de la carencia.</p></div>
+      <div><h3>Palabras que construyen</h3><p>Cuidamos nuestro lenguaje y evitamos las palabras que empequeñecen. Lo que decimos moldea lo que creemos posible.</p></div>
+    </div>
+  </section>
+
+  <section class="community" id="comunidad">
+    <div>
+      <h2>Aprende con una comunidad que invierte</h2>
+      <p>Una comunidad para aprender a invertir en la bolsa de valores junto a otras personas que están en el mismo camino.</p>
+      <div class="actions">
+        <a class="btn" id="join-btn" data-ext href="https://www.skool.com/circulo-financiero/about?ref=64363b52d7d64d8d87ddb3c7580fe23d" target="_blank" rel="noopener noreferrer">Unirme en Skool</a>
+        <a class="btn btn2" data-ext href="https://www.instagram.com/wilson_madrid9?obrf=MTNoeW5wOWtzMWpsdg==" target="_blank" rel="noopener noreferrer">Instagram de Wilson Madrid</a>
+      </div>
+    </div>
+    <dl class="facts">
+      <div><dt>Dirigida por</dt><dd>Wilson Madrid</dd></div>
+      <div><dt>Plataforma</dt><dd>Skool</dd></div>
+      <div><dt>Clases en vivo por Zoom</dt><dd>Cada 15 días, sábados 7:00 p. m.</dd></div>
+    </dl>
+  </section>
+
+  <p class="note">Estas herramientas son educativas y no constituyen asesoría financiera. Los rendimientos proyectados no están garantizados. Vender opciones implica riesgo de pérdida, que puede ser considerable.</p>
+  <footer>Círculo Financiero</footer>
+</div>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var num=function(id){var v=parseFloat($(id).value);return isFinite(v)&&v>0?v:0};
+  var usd=new Intl.NumberFormat("es-VE",{style:"currency",currency:"USD",maximumFractionDigits:0});
+  var usd2=new Intl.NumberFormat("es-VE",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2});
+  var pct=function(x){return new Intl.NumberFormat("es-VE",{minimumFractionDigits:2,maximumFractionDigits:2}).format(x)+" %"};
+
+  /* Pestañas */
+  var tabs=[["t1","p1"],["t2","p2"]];
+  tabs.forEach(function(t){$(t[0]).addEventListener("click",function(){
+    tabs.forEach(function(u){var on=u[0]===t[0];$(u[0]).setAttribute("aria-selected",on);$(u[1]).classList.toggle("on",on)});
+    if(t[0]==="t1")interest();else options();
+  })});
+
+  /* Interés compuesto */
+  function interest(){
+    var P=num("c-ini"),m=num("c-apo"),r=num("c-tas")/100,yrs=Math.min(60,Math.max(1,Math.round(num("c-anos"))||1)),n=parseFloat($("c-frec").value);
+    var i=Math.pow(1+r/n,n/12)-1,bal=P,con=P,months=yrs*12,tot=[P],cont=[P],rows=[];
+    for(var k=1;k<=months;k++){bal=bal*(1+i)+m;con+=m;tot.push(bal);cont.push(con);
+      if(k%12===0)rows.push([k/12,con,bal-con,bal]);}
+    $("c-total").textContent=usd.format(bal);
+    $("c-aport").textContent=usd.format(con);
+    $("c-int").textContent=usd.format(bal-con);
+    $("c-mult").textContent=(con>0?bal/con:0).toFixed(2).replace(".",",")+"x";
+    var W=600,H=290,pl=76,pb=48,pt=8,max=Math.max(bal,1),X=function(k){return pl+k/months*(W-pl-6)},Y=function(v){return (H-pb)-(v/max)*(H-pb-pt)};
+    var line=function(a){return a.map(function(v,k){return (k?"L":"M")+X(k).toFixed(1)+" "+Y(v).toFixed(1)}).join(" ")};
+    var area=line(tot)+" L"+X(months)+" "+(H-pb)+" L"+pl+" "+(H-pb)+" Z";
+    var s='<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".35"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>';
+    var fmt=new Intl.NumberFormat("es-VE",{notation:"compact",maximumFractionDigits:1});
+    [0,.25,.5,.75,1].forEach(function(f){var y=Y(max*f);s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)"/><text x="'+(pl-8)+'" y="'+(y+4)+'" text-anchor="end" fill="var(--muted)" font-size="12">$'+fmt.format(max*f)+'</text>'});
+    s+='<path d="'+area+'" fill="url(#g)"/><path d="'+line(cont)+'" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4"/><path d="'+line(tot)+'" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linejoin="round"/>';
+    var st=Math.max(1,Math.ceil(yrs/6));
+    for(var t=0;t<=yrs;t+=st){s+='<text x="'+X(t*12)+'" y="'+(H-pb+18)+'" text-anchor="middle" fill="var(--muted)" font-size="12">'+t+'</text>'}
+    s+='<text x="'+((pl+W)/2)+'" y="'+(H-4)+'" text-anchor="middle" fill="var(--muted)" font-size="12">Tiempo (años)</text><text transform="rotate(-90)" x="'+(-(H-pb)/2)+'" y="14" text-anchor="middle" fill="var(--muted)" font-size="12">Dinero ($)</text>';
+    $("c-svg").innerHTML=s;
+    $("c-body").innerHTML=rows.map(function(r){return "<tr><td>"+r[0]+"</td><td>"+usd.format(r[1])+"</td><td>"+usd.format(r[2])+"</td><td>"+usd.format(r[3])+"</td></tr>"}).join("");
+  }
+  ["c-ini","c-apo","c-tas","c-anos","c-frec"].forEach(function(id){$(id).addEventListener("input",interest)});
+
+  /* Opciones */
+  var mode="put";
+  function setMode(x){mode=x;$("o-put").setAttribute("aria-pressed",x==="put");$("o-call").setAttribute("aria-pressed",x==="call");
+    if(x==="put"&&num("o-k")>=num("o-px"))$("o-k").value=(num("o-px")*.94).toFixed(2);
+    if(x==="call"&&num("o-k")<=num("o-px"))$("o-k").value=(num("o-px")*1.05).toFixed(2);
+    options();}
+  $("o-put").addEventListener("click",function(){setMode("put")});
+  $("o-call").addEventListener("click",function(){setMode("call")});
+  function options(){
+    var px=num("o-px"),k=num("o-k"),pr=num("o-pr"),n=Math.max(1,Math.round(num("o-n"))||1),d=Math.max(1,Math.round(num("o-d"))||1),sh=100*n;
+    var prem=pr*sh,cap,be,max,cush,txt;
+    if(mode==="put"){
+      cap=k*sh;be=k-pr;max=prem;cush=px>0?(px-be)/px*100:0;
+      $("o-caplbl").textContent="Efectivo que debes tener";
+      txt="Cobras <b>"+usd2.format(prem)+"</b> hoy por comprometerte a comprar "+sh+" acciones a "+usd2.format(k)+" si te las asignan. Si la acción cierra por encima de "+usd2.format(k)+" al vencimiento, te quedas con la prima y no compras nada. Si cierra por debajo, compras al strike y tu costo real por acción queda en "+usd2.format(be)+".";
+    }else{
+      cap=px*sh;be=px-pr;max=(Math.max(k-px,0)+pr)*sh;cush=px>0?pr/px*100:0;
+      $("o-caplbl").textContent="Valor de las acciones que posees";
+      txt="Ya posees "+sh+" acciones y cobras <b>"+usd2.format(prem)+"</b> por comprometerte a venderlas a "+usd2.format(k)+". Si la acción cierra por debajo de "+usd2.format(k)+", conservas acciones y prima. Si cierra por encima, vendes a "+usd2.format(k)+" y tu ganancia máxima es "+usd2.format(max)+".";
+    }
+    var base=mode==="put"
+      ?"La ganancia máxima es la prima cobrada: "+usd2.format(pr)+" × "+sh+" acciones = "+usd2.format(max)+". No puedes ganar más porque, si te asignan, compras al strike."
+      :"La ganancia máxima suma lo que ganas hasta el strike ("+usd2.format(Math.max(k-px,0))+" por acción) más la prima ("+usd2.format(pr)+" por acción), por "+sh+" acciones = "+usd2.format(max)+". Si te ejercen, vendes al strike y no participas de subidas mayores.";
+    $("o-base").textContent=base;
+    var y=cap>0?prem/cap*100:0,ann=y*365/d;
+    $("o-yield").textContent=pct(y);
+    $("o-prem").textContent=usd2.format(prem);
+    $("o-cap").textContent=usd2.format(cap);
+    $("o-ann").textContent=pct(ann);
+    $("o-annnote").textContent="El anualizado simple proyecta el rendimiento a un año sin reinvertir: rendimiento × 365 ÷ días al vencimiento. Aquí: "+pct(y)+" × 365 ÷ "+d+" = "+pct(ann)+". Supone repetir la operación con el mismo resultado durante todo el año.";
+    $("o-txt").innerHTML=txt;
+  }
+  ["o-px","o-k","o-pr","o-n","o-d"].forEach(function(id){$(id).addEventListener("input",options)});
+
+  /* Botón de comunidad */
+  Array.prototype.forEach.call(document.querySelectorAll("a[data-ext]"),function(a){a.addEventListener("click",function(e){
+    e.preventDefault();
+    var w=null;
+    try{w=window.open(this.href,"_blank");if(w)w.opener=null}catch(x){}
+    if(!w){try{window.top.location.href=this.href}catch(x){}}
+  })});
+
+  interest();options();
+})();
+</script>
+</body>
+</html>
